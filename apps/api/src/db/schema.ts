@@ -169,3 +169,22 @@ export const attendanceRelations = relations(attendance, ({ one }) => ({
     references: [subject.id],
   }),
 }));
+
+export type User = typeof users.$inferSelect;
+export type NewUser = typeof users.$inferInsert;
+export type Subject = typeof subject.$inferSelect;
+export type NewSubject = typeof subject.$inferInsert;
+export type Attendance = typeof attendance.$inferSelect;
+export type NewAttendance = typeof attendance.$inferInsert;
+export type Note = typeof notes.$inferSelect;
+export type NewNote = typeof notes.$inferInsert;
+
+// ZOD schemas for runtime
+export const insertUserSchema = createInsertSchema(users);
+export const selectUserSchema = createSelectSchema(users);
+export const insertSubjectSchema = createInsertSchema(subject);
+export const selectSubjectSchema = createSelectSchema(subject);
+export const insertAttendanceSchema = createInsertSchema(attendance);
+export const selectAttendanceSchema = createSelectSchema(attendance);
+export const insertNotesSchema = createInsertSchema(notes);
+export const selectNotesSchema = createSelectSchema(notes);

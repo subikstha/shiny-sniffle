@@ -15,6 +15,13 @@
       "when": 1786442450235,
       "tag": "0001_past_komodo",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1786446557347,
+      "tag": "0002_next_blindfold",
+      "breakpoints": true
     }
   ]
 }
