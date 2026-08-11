@@ -19,6 +19,9 @@ const envSchema = z.object({
     .enum(["development", "test", "production"])
     .default("development"),
   PORT: z.coerce.number().positive().default(3005),
+  DATABASE_URL: z
+    .string({ message: "Database URL is required" })
+    .startsWith("postgresql://"),
 });
 
 export type Env = z.infer<typeof envSchema>;
