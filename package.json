@@ -1,0 +1,17 @@
+{
+  "name": "classroom-app",
+  "version": "1.0.0",
+  "description": "classroom application in hope of making lives of students and teacher a bit easier",
+  "license": "ISC",
+  "author": "Subik Shrestha",
+  "type": "commonjs",
+  "main": "index.js",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "test": ""
+  }
+}
