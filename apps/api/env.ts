@@ -22,6 +22,9 @@ const envSchema = z.object({
   DATABASE_URL: z
     .string({ message: "Database URL is required" })
     .startsWith("postgresql://"),
+  BCRYPT_ROUNDS: z.coerce.number().min(10).max(20).default(12),
+  JWT_SECRET: z.string().min(32, "Must be 32 chars"),
+  JWT_EXPIRES_IN: z.string().default("7d"),
 });
 
 export type Env = z.infer<typeof envSchema>;
