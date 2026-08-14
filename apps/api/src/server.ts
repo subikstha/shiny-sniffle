@@ -4,6 +4,8 @@ import userRoutes from "./routes/userRoutes.ts";
 
 const app = express();
 
+app.use(express.json()); // Without this the server cannot accept JSON payload
+
 app.get("/health", (req, res) => {
   res.json({ message: "You reached the API" }).status(200);
 });
