@@ -1,6 +1,6 @@
 import { jwtVerify, SignJWT } from "jose";
 import { createSecretKey } from "node:crypto";
-import env from "../../env";
+import env from "../../env.ts";
 
 export interface JwtPayload {
   id: string;
