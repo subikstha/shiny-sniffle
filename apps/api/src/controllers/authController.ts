@@ -19,11 +19,12 @@ export const register = async (req: Request, res: Response) => {
         firstName: users.firstName,
         lastName: users.lastName,
         createdAt: users.createdAt,
+        role: users.role,
       });
     // Now sign in the user using JWT token
     const token = await generateToken({
       id: user.id,
-      username: user.username,
+      role: user.role || "student",
       email: user.email,
     });
 
@@ -49,14 +50,14 @@ export const login = async (req: Request, res: Response) => {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    const isValidPassword = comparePassword(password, user.password);
+    const isValidPassword = await comparePassword(password, user.password);
 
     if (!isValidPassword) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
     const token = await generateToken({
-      username: user.username,
+      role: user.role || "student",
       email: user.email,
       id: user.id,
     });

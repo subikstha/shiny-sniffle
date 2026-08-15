@@ -11,7 +11,7 @@ const HomePage = () => {
     return <div>Loading all users</div>;
   }
   console.log("This is data in home page", data);
-  return <div>HomePage</div>;
+  return <div className="text-pink-500">HomePage</div>;
 };
 
 export default HomePage;
