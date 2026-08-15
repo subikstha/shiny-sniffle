@@ -9,7 +9,7 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:migrate": "drizzle-kit migrate",
-    "db:seed": "node src/db/seed.ts"
+    "db:seed": "NODE_ENV=development node src/db/seed.ts"
   },
   "keywords": [],
   "author": "",
