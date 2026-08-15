@@ -1,10 +1,9 @@
 import { Router } from "express";
+import { getAllUsers } from "../controllers/userController.ts";
 
 const router = Router();
 
-router.get("/", (req, res) => {
-  res.status(200).json({ message: "All users here" });
-});
+router.get("/", getAllUsers);
 
 router.get("/:id", (req, res) => {
   res.status(200).json({
