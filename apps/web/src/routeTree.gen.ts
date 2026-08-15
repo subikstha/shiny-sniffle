@@ -18,6 +18,8 @@ import { Route as rootRoute } from './routes/__root'
 
 const TeacherDashboardLazyImport = createFileRoute('/teacher-dashboard')()
 const StudentDashboardLazyImport = createFileRoute('/student-dashboard')()
+const LoginLazyImport = createFileRoute('/login')()
+const IndexLazyImport = createFileRoute('/')()
 
 // Create/Update Routes
 
@@ -35,10 +37,34 @@ const StudentDashboardLazyRoute = StudentDashboardLazyImport.update({
   import('./routes/student-dashboard.lazy').then((d) => d.Route),
 )
 
+const LoginLazyRoute = LoginLazyImport.update({
+  path: '/login',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/login.lazy').then((d) => d.Route))
+
+const IndexLazyRoute = IndexLazyImport.update({
+  path: '/',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginLazyImport
+      parentRoute: typeof rootRoute
+    }
     '/student-dashboard': {
       id: '/student-dashboard'
       path: '/student-dashboard'
@@ -59,36 +85,46 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 export interface FileRoutesByFullPath {
+  '/': typeof IndexLazyRoute
+  '/login': typeof LoginLazyRoute
   '/student-dashboard': typeof StudentDashboardLazyRoute
   '/teacher-dashboard': typeof TeacherDashboardLazyRoute
 }
 
 export interface FileRoutesByTo {
+  '/': typeof IndexLazyRoute
+  '/login': typeof LoginLazyRoute
   '/student-dashboard': typeof StudentDashboardLazyRoute
   '/teacher-dashboard': typeof TeacherDashboardLazyRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
+  '/': typeof IndexLazyRoute
+  '/login': typeof LoginLazyRoute
   '/student-dashboard': typeof StudentDashboardLazyRoute
   '/teacher-dashboard': typeof TeacherDashboardLazyRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/student-dashboard' | '/teacher-dashboard'
+  fullPaths: '/' | '/login' | '/student-dashboard' | '/teacher-dashboard'
   fileRoutesByTo: FileRoutesByTo
-  to: '/student-dashboard' | '/teacher-dashboard'
-  id: '__root__' | '/student-dashboard' | '/teacher-dashboard'
+  to: '/' | '/login' | '/student-dashboard' | '/teacher-dashboard'
+  id: '__root__' | '/' | '/login' | '/student-dashboard' | '/teacher-dashboard'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
+  IndexLazyRoute: typeof IndexLazyRoute
+  LoginLazyRoute: typeof LoginLazyRoute
   StudentDashboardLazyRoute: typeof StudentDashboardLazyRoute
   TeacherDashboardLazyRoute: typeof TeacherDashboardLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
+  IndexLazyRoute: IndexLazyRoute,
+  LoginLazyRoute: LoginLazyRoute,
   StudentDashboardLazyRoute: StudentDashboardLazyRoute,
   TeacherDashboardLazyRoute: TeacherDashboardLazyRoute,
 }
@@ -105,9 +141,17 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
+        "/",
+        "/login",
         "/student-dashboard",
         "/teacher-dashboard"
       ]
+    },
+    "/": {
+      "filePath": "index.lazy.tsx"
+    },
+    "/login": {
+      "filePath": "login.lazy.tsx"
     },
     "/student-dashboard": {
       "filePath": "student-dashboard.lazy.tsx"
