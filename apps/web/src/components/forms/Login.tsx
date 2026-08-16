@@ -1,15 +1,34 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type React from "react";
-import login from "../../api/login";
+import { login, logout } from "../../api/auth";
+import useAuth from "../../hooks/useAuth";
 const Login = () => {
+  const queryClient = useQueryClient();
+  const { isAuthenticated, isLoading, user } = useAuth();
+  console.log("user", user);
+  console.log("isAuthenticated", isAuthenticated);
   const mutation = useMutation({
     mutationFn: ({ email, password }: { email: string; password: string }) =>
       login(email, password),
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       console.log("Response back from the login", data);
+      // After successful login, need to tell react query to fetch getMe
+      await queryClient.invalidateQueries({
+        queryKey: ["me"],
+      });
     },
     onError: (data) => {
       console.log("Error from the server", data);
+    },
+  });
+
+  const logoutMutation = useMutation({
+    mutationFn: () => logout(),
+    onSuccess: () => {
+      console.log("Logout success");
+      queryClient.invalidateQueries({
+        queryKey: ["me"],
+      });
     },
   });
 
@@ -26,6 +45,17 @@ const Login = () => {
       password,
     });
   };
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+  if (isAuthenticated) {
+    return (
+      <div>
+        <h1>Welcome, {user?.email}</h1>
+        <button onClick={() => logoutMutation.mutate()}>Logout</button>
+      </div>
+    );
+  }
   return (
     <div>
       <h1>Login</h1>

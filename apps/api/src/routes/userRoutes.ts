@@ -1,9 +1,10 @@
 import { Router } from "express";
 import { getAllUsers } from "../controllers/userController.ts";
+import { authenticateToken } from "../middleware/auth.ts";
 
 const router = Router();
 
-router.get("/", getAllUsers);
+router.get("/", authenticateToken, getAllUsers);
 
 router.get("/:id", (req, res) => {
   res.status(200).json({

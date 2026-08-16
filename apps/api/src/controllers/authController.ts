@@ -5,6 +5,7 @@ import { generateToken } from "../utils/jwt.ts";
 import { comparePassword, hashPassword } from "../utils/password.ts";
 import { eq } from "drizzle-orm";
 import { env } from "../../env.ts";
+import type { AuthenticatedRequest } from "../middleware/auth.ts";
 export const register = async (req: Request, res: Response) => {
   try {
     const hashedPassword = hashPassword(req.body.password);
@@ -41,7 +42,6 @@ export const register = async (req: Request, res: Response) => {
     res.status(201).json({
       message: "User created",
       user,
-      token,
     });
   } catch (e) {
     console.error("Registration Error", e);
@@ -72,6 +72,13 @@ export const login = async (req: Request, res: Response) => {
       id: user.id,
     });
 
+    res.cookie("accessToken", token, {
+      httpOnly: true,
+      secure: env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
     return res.status(201).json({
       message: "Login Succesful",
       user: {
@@ -82,10 +89,28 @@ export const login = async (req: Request, res: Response) => {
         lastName: user.lastName,
         createdAt: user.createdAt,
       },
-      token,
     });
   } catch (e) {
     console.error("Login Error", e);
     res.status(500).json({ error: "Failed to login" });
   }
+};
+
+export const logout = async (req: AuthenticatedRequest, res: Response) => {
+  res.clearCookie("accessToken", {
+    httpOnly: true,
+    secure: env.NODE_ENV === "production",
+    sameSite: "lax",
+  });
+
+  return res.json({
+    message: "Logged out successfully!",
+  });
+};
+
+export const getMe = async (req: AuthenticatedRequest, res: Response) => {
+  // TODO: Fetch data from the DB instead
+  return res.json({
+    user: req.user,
+  });
 };

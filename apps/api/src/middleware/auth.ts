@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import { verifyToken, type JwtPayload } from "../utils/jwt.js";
+import { verifyToken, type JwtPayload } from "../utils/jwt.ts";
 
 export interface AuthenticatedRequest extends Request {
   user?: JwtPayload;
@@ -11,8 +11,9 @@ export const authenticateToken = async (
   next: NextFunction,
 ) => {
   try {
-    const authHeader = req.headers["authorization"];
-    const token = authHeader && authHeader.split(" ")[1];
+    // const authHeader = req.headers["authorization"];
+    // const token = authHeader && authHeader.split(" ")[1];
+    const token = req.cookies.accessToken;
     if (!token) {
       return res.status(401).json({ error: "Bad Request" });
     }
