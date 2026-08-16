@@ -5,6 +5,12 @@ const Login = () => {
   const mutation = useMutation({
     mutationFn: ({ email, password }: { email: string; password: string }) =>
       login(email, password),
+    onSuccess: (data) => {
+      console.log("Response back from the login", data);
+    },
+    onError: (data) => {
+      console.log("Error from the server", data);
+    },
   });
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {

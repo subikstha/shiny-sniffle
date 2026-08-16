@@ -4,7 +4,7 @@ import { users, type NewUser } from "../db/schema.ts";
 import { generateToken } from "../utils/jwt.ts";
 import { comparePassword, hashPassword } from "../utils/password.ts";
 import { eq } from "drizzle-orm";
-
+import { env } from "../../env.ts";
 export const register = async (req: Request, res: Response) => {
   try {
     const hashedPassword = hashPassword(req.body.password);
@@ -26,6 +26,16 @@ export const register = async (req: Request, res: Response) => {
       id: user.id,
       role: user.role || "student",
       email: user.email,
+    });
+
+    // res.cookie(name, value, options)
+    // When you send this HTTP response to the browser, tell the browser to store a cookie called accessToken whose value is token
+    // in backend we access it as res.cookies.accessToken
+    res.cookie("accessToken", token, {
+      httpOnly: true, // JS running in the browser cannot access the cookie using document.cookie
+      secure: env.NODE_ENV === "production", // Determines whether cookie can only be sent over HTTPS
+      sameSite: "lax", // controls when the browser sends cookie in requests originating from another site for CSRF protection
+      maxAge: 7 * 24 * 60 * 60 * 1000, // in milliseconds, how long the browser should keep the cookie, 7days, 24hours, 60min, 60 sec, 1000 milliseconds 7days
     });
 
     res.status(201).json({
