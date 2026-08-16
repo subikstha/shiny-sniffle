@@ -46,24 +46,50 @@ const Login = () => {
     });
   };
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        Loading...
+      </div>
+    );
   }
   if (isAuthenticated) {
     return (
-      <div>
-        <h1>Welcome, {user?.email}</h1>
-        <button onClick={() => logoutMutation.mutate()}>Logout</button>
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 p-4">
+        <h1 className="text-2xl font-bold">Welcome, {user?.email}</h1>
+        <button
+          onClick={() => logoutMutation.mutate()}
+          className="px-4 py-2 bg-slate-900 text-white rounded-md hover:bg-slate-800 transition-colors"
+        >
+          Logout
+        </button>
       </div>
     );
   }
   return (
-    <div>
-      <h1>Login</h1>
-      <form onSubmit={handleSubmit}>
-        <input type="email" name="email" placeholder="Email" />
-        <input type="password" name="password" placeholder="Password" />
-        <button type="submit">Login</button>
-      </form>
+    <div className="flex min-h-screen flex-col items-center justify-center p-4">
+      <div className="w-full max-w-sm flex flex-col items-center gap-6">
+        <h1 className="text-2xl font-bold">Login</h1>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full">
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            className="w-full px-3 py-2 border border-slate-900 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-800"
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            className="w-full px-3 py-2 border border-slate-900 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-800"
+          />
+          <button
+            type="submit"
+            className="w-full py-2 bg-slate-900 text-white font-medium rounded-md hover:bg-slate-800 transition-colors"
+          >
+            Login
+          </button>
+        </form>
+      </div>
     </div>
   );
 };
