@@ -4,6 +4,7 @@ import { getAllStudents } from '../../api/users'
 import { calendarContext } from './CalendarProvider';
 import { useContext } from 'react'
 import YearSelector from './YearSelector';
+import MonthSelector from './MonthSelector';
 interface AllStudents {
     data: {
         id: string;
@@ -34,8 +35,9 @@ function Calendar() {
     if (isLoading) return <div>Loading Data...</div>
 
     return (<div>
-        <div className='flex'>
+        <div className='flex mb-4 justify-between'>
             <YearSelector />
+            <MonthSelector />
         </div>
         <table className="table-fixed w-full border border-gray-300 [&_td]:px-2 [&_td]:py-4">
             <tbody>
