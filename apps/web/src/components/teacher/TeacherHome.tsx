@@ -1,7 +1,8 @@
 import Calendar from "../calendar/Calendar";
+import CalendarProvider from "../calendar/CalendarProvider";
 
 const TeacherHome = () => {
-  return <div><Calendar /></div>;
+  return <CalendarProvider><Calendar /></CalendarProvider>;
 };
 
 export default TeacherHome;
