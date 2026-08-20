@@ -1,15 +1,21 @@
 import { useContext } from "react";
 import { calendarContext } from "./CalendarProvider";
+import { months } from "../../constants";
 
-const months = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-];
 function MonthSelector() {
-    const { state } = useContext(calendarContext)
-    return <select>
-        {months.map((month) => <option key={month} selected={months[state.today.getMonth()] == month}>{month}</option>)}
+  const { state, dispatch } = useContext(calendarContext);
+  return (
+    <select
+      onChange={(e) => dispatch({ type: "setMonth", payload: +e.target.value })}
+      value={state.month}
+    >
+      {months.map((month, index) => (
+        <option key={month} value={index}>
+          {month}
+        </option>
+      ))}
     </select>
+  );
 }
 
-export default MonthSelector
+export default MonthSelector;

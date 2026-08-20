@@ -2,8 +2,8 @@ import React, { createContext, useReducer } from "react";
 
 type CalendarState = {
     today: Date,
-    year: string;
-    month: string;
+    year: number;
+    month: number;
     attendanceRecords: {
         studentId: string;
         attendances: {
@@ -15,10 +15,10 @@ type CalendarState = {
 
 type CalendarAction = {
     type: 'setYear',
-    payload: string
+    payload: number
 } | {
     type: 'setMonth',
-    payload: string
+    payload: number
 } | {
     type: 'setToday',
     payload: Date
@@ -46,8 +46,8 @@ function calendarReducer(state: CalendarState, action: CalendarAction) {
 
 const initialCalendarState = {
     today: new Date(),
-    year: '',
-    month: '',
+    year: (new Date()).getFullYear(),
+    month: (new Date()).getMonth(),
     attendanceRecords: null
 }
 export const calendarContext = createContext(null as unknown as {
