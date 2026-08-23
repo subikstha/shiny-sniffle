@@ -109,8 +109,22 @@ export const logout = async (req: AuthenticatedRequest, res: Response) => {
 };
 
 export const getMe = async (req: AuthenticatedRequest, res: Response) => {
-  // TODO: Fetch data from the DB instead
-  return res.json({
-    user: req.user,
-  });
+  try {
+    const [user] = await db
+      .select({
+        id: users.id,
+        email: users.email,
+        username: users.username,
+        role: users.role,
+        firstName: users.firstName,
+        lastName: users.lastName,
+      })
+      .from(users)
+      .where(eq(users.id, req.user!.id));
+    return res.json({
+      user,
+    });
+  } catch (e) {
+    return res.status(500).json({ message: "Server error" });
+  }
 };

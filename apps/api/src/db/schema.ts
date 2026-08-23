@@ -16,7 +16,7 @@ import {
 import { relations } from "drizzle-orm";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
-export const roleEnum = pgEnum("user_role", ["teacher", "student"]);
+export const roleEnum = pgEnum("user_role", ["teacher", "student", "admin"]);
 
 export const users = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
