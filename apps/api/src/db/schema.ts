@@ -10,6 +10,8 @@ import {
   pgEnum,
   date,
   index,
+  smallint,
+  time,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
@@ -54,6 +56,27 @@ export const subject = pgTable(
   },
   // This creates a database index on the teacherId column
   (table) => [index("subjects_teacher_idx").on(table.teacherId)],
+);
+
+export const classSchedules = pgTable(
+  "class_schedules",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    subjectId: uuid("subject_id")
+      .notNull()
+      .references(() => subject.id, { onDelete: "cascade" }),
+    // Day of week 0 (sun) through 6(sat)
+    dayOfWeek: smallint("day_of_week").notNull(),
+
+    // Class start and end times
+    startTime: time("start_time"),
+    endTime: time("end_time"),
+  },
+  (table) => [
+    index("schedules_subject_idx").on(table.subjectId),
+    // Prevent duplicate days for the same subject
+    unique().on(table.subjectId, table.dayOfWeek),
+  ],
 );
 
 export const attendanceEnum = pgEnum("attendance_status", [
@@ -168,6 +191,28 @@ export const attendanceRelations = relations(attendance, ({ one }) => ({
     fields: [attendance.subjectId],
     references: [subject.id],
   }),
+}));
+
+// Add schedule relations
+export const subjectSchedulesRelations = relations(
+  classSchedules,
+  ({ one }) => ({
+    subject: one(subject, {
+      fields: [classSchedules.subjectId],
+      references: [subject.id],
+    }),
+  }),
+);
+
+// Update subjectRelations
+export const classRelations = relations(subject, ({ one, many }) => ({
+  teacher: one(users, {
+    fields: [subject.teacherId],
+    references: [users.id],
+  }),
+  notes: many(notes),
+  attendances: many(attendance),
+  schedules: many(classSchedules), // Linked schedule
 }));
 
 export type User = typeof users.$inferSelect;
