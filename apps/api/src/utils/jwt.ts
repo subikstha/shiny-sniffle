@@ -5,7 +5,7 @@ import env from "../../env.ts";
 export interface JwtPayload {
   id: string;
   email: string;
-  role: "teacher" | "student";
+  role: "teacher" | "student" | "admin";
 }
 
 export const generateToken = (payload: JwtPayload) => {
