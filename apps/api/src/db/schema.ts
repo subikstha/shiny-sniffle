@@ -65,16 +65,23 @@ export const classSchedules = pgTable(
     subjectId: uuid("subject_id")
       .notNull()
       .references(() => subject.id, { onDelete: "cascade" }),
-    // Day of week 0 (sun) through 6(sat)
-    dayOfWeek: smallint("day_of_week").notNull(),
 
-    // Class start and end times
+    // Single integer day (0 = Sun, 1 = Mon, ..., 6 = Sat)
+    dayOfWeek: integer("day_of_week").notNull(),
+
+    // Specific time for THIS day
     startTime: time("start_time"),
     endTime: time("end_time"),
+
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
   },
   (table) => [
     index("schedules_subject_idx").on(table.subjectId),
-    // Prevent duplicate days for the same subject
+    // Ensures a subject can't have duplicate schedule entries for the same day
     unique().on(table.subjectId, table.dayOfWeek),
   ],
 );

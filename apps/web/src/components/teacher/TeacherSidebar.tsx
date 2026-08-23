@@ -2,8 +2,10 @@ import { Link } from "@tanstack/react-router";
 
 function TeacherSidebar() {
   return (
-    <aside className="w-64 bg-slate-900 text-white p-4">
-      <Link to="/dashboard/attendance">Class Attendance</Link>
+    <aside className="w-64 p-4 flex flex-col gap-4">
+      <Link to="/dashboard/attendance" className="">
+        Class Attendance
+      </Link>
       <Link to="/dashboard/class-schedule">Set Class Schedule</Link>
     </aside>
   );

@@ -20,11 +20,11 @@ import { Route as StudentImport } from './routes/_student'
 
 const LoginLazyImport = createFileRoute('/login')()
 const IndexLazyImport = createFileRoute('/')()
-const StudentStudentDashboardLazyImport = createFileRoute(
-  '/_student/student-dashboard',
-)()
 const TeacherDashboardIndexLazyImport = createFileRoute(
   '/_teacher/dashboard/',
+)()
+const StudentDashboardIndexLazyImport = createFileRoute(
+  '/_student/dashboard/',
 )()
 const TeacherDashboardClassScheduleLazyImport = createFileRoute(
   '/_teacher/dashboard/class-schedule',
@@ -55,19 +55,18 @@ const IndexLazyRoute = IndexLazyImport.update({
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
 
-const StudentStudentDashboardLazyRoute =
-  StudentStudentDashboardLazyImport.update({
-    path: '/student-dashboard',
-    getParentRoute: () => StudentRoute,
-  } as any).lazy(() =>
-    import('./routes/_student.student-dashboard.lazy').then((d) => d.Route),
-  )
-
 const TeacherDashboardIndexLazyRoute = TeacherDashboardIndexLazyImport.update({
   path: '/dashboard/',
   getParentRoute: () => TeacherRoute,
 } as any).lazy(() =>
   import('./routes/_teacher/dashboard/index.lazy').then((d) => d.Route),
+)
+
+const StudentDashboardIndexLazyRoute = StudentDashboardIndexLazyImport.update({
+  path: '/dashboard/',
+  getParentRoute: () => StudentRoute,
+} as any).lazy(() =>
+  import('./routes/_student/dashboard/index.lazy').then((d) => d.Route),
 )
 
 const TeacherDashboardClassScheduleLazyRoute =
@@ -120,13 +119,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginLazyImport
       parentRoute: typeof rootRoute
     }
-    '/_student/student-dashboard': {
-      id: '/_student/student-dashboard'
-      path: '/student-dashboard'
-      fullPath: '/student-dashboard'
-      preLoaderRoute: typeof StudentStudentDashboardLazyImport
-      parentRoute: typeof StudentImport
-    }
     '/_teacher/dashboard/attendance': {
       id: '/_teacher/dashboard/attendance'
       path: '/dashboard/attendance'
@@ -141,6 +133,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TeacherDashboardClassScheduleLazyImport
       parentRoute: typeof TeacherImport
     }
+    '/_student/dashboard/': {
+      id: '/_student/dashboard/'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof StudentDashboardIndexLazyImport
+      parentRoute: typeof StudentImport
+    }
     '/_teacher/dashboard/': {
       id: '/_teacher/dashboard/'
       path: '/dashboard'
@@ -154,11 +153,11 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface StudentRouteChildren {
-  StudentStudentDashboardLazyRoute: typeof StudentStudentDashboardLazyRoute
+  StudentDashboardIndexLazyRoute: typeof StudentDashboardIndexLazyRoute
 }
 
 const StudentRouteChildren: StudentRouteChildren = {
-  StudentStudentDashboardLazyRoute: StudentStudentDashboardLazyRoute,
+  StudentDashboardIndexLazyRoute: StudentDashboardIndexLazyRoute,
 }
 
 const StudentRouteWithChildren =
@@ -184,7 +183,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexLazyRoute
   '': typeof TeacherRouteWithChildren
   '/login': typeof LoginLazyRoute
-  '/student-dashboard': typeof StudentStudentDashboardLazyRoute
   '/dashboard/attendance': typeof TeacherDashboardAttendanceLazyRoute
   '/dashboard/class-schedule': typeof TeacherDashboardClassScheduleLazyRoute
   '/dashboard': typeof TeacherDashboardIndexLazyRoute
@@ -194,7 +192,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexLazyRoute
   '': typeof TeacherRouteWithChildren
   '/login': typeof LoginLazyRoute
-  '/student-dashboard': typeof StudentStudentDashboardLazyRoute
   '/dashboard/attendance': typeof TeacherDashboardAttendanceLazyRoute
   '/dashboard/class-schedule': typeof TeacherDashboardClassScheduleLazyRoute
   '/dashboard': typeof TeacherDashboardIndexLazyRoute
@@ -206,9 +203,9 @@ export interface FileRoutesById {
   '/_student': typeof StudentRouteWithChildren
   '/_teacher': typeof TeacherRouteWithChildren
   '/login': typeof LoginLazyRoute
-  '/_student/student-dashboard': typeof StudentStudentDashboardLazyRoute
   '/_teacher/dashboard/attendance': typeof TeacherDashboardAttendanceLazyRoute
   '/_teacher/dashboard/class-schedule': typeof TeacherDashboardClassScheduleLazyRoute
+  '/_student/dashboard/': typeof StudentDashboardIndexLazyRoute
   '/_teacher/dashboard/': typeof TeacherDashboardIndexLazyRoute
 }
 
@@ -218,7 +215,6 @@ export interface FileRouteTypes {
     | '/'
     | ''
     | '/login'
-    | '/student-dashboard'
     | '/dashboard/attendance'
     | '/dashboard/class-schedule'
     | '/dashboard'
@@ -227,7 +223,6 @@ export interface FileRouteTypes {
     | '/'
     | ''
     | '/login'
-    | '/student-dashboard'
     | '/dashboard/attendance'
     | '/dashboard/class-schedule'
     | '/dashboard'
@@ -237,9 +232,9 @@ export interface FileRouteTypes {
     | '/_student'
     | '/_teacher'
     | '/login'
-    | '/_student/student-dashboard'
     | '/_teacher/dashboard/attendance'
     | '/_teacher/dashboard/class-schedule'
+    | '/_student/dashboard/'
     | '/_teacher/dashboard/'
   fileRoutesById: FileRoutesById
 }
@@ -282,7 +277,7 @@ export const routeTree = rootRoute
     "/_student": {
       "filePath": "_student.tsx",
       "children": [
-        "/_student/student-dashboard"
+        "/_student/dashboard/"
       ]
     },
     "/_teacher": {
@@ -296,10 +291,6 @@ export const routeTree = rootRoute
     "/login": {
       "filePath": "login.lazy.tsx"
     },
-    "/_student/student-dashboard": {
-      "filePath": "_student.student-dashboard.lazy.tsx",
-      "parent": "/_student"
-    },
     "/_teacher/dashboard/attendance": {
       "filePath": "_teacher/dashboard/attendance.lazy.tsx",
       "parent": "/_teacher"
@@ -307,6 +298,10 @@ export const routeTree = rootRoute
     "/_teacher/dashboard/class-schedule": {
       "filePath": "_teacher/dashboard/class-schedule.lazy.tsx",
       "parent": "/_teacher"
+    },
+    "/_student/dashboard/": {
+      "filePath": "_student/dashboard/index.lazy.tsx",
+      "parent": "/_student"
     },
     "/_teacher/dashboard/": {
       "filePath": "_teacher/dashboard/index.lazy.tsx",
