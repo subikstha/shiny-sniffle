@@ -1,7 +1,8 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { days } from "../../constants";
 import { getAllTeachers } from "../../api/users";
 import type React from "react";
+import { createSubject } from "../../api/subject";
 // TODO: Need to fetch the teacher from the backend
 const Subject = () => {
   // TODO: List all the available subjects with their respective teachers
@@ -10,6 +11,19 @@ const Subject = () => {
     queryKey: ["get-teachers"],
     queryFn: () => getAllTeachers(),
     staleTime: 30000,
+  });
+
+  const mutation = useMutation({
+    mutationFn: ({
+      subjectName,
+      daysOfWeek,
+      teacherId,
+    }: {
+      subjectName: string;
+      daysOfWeek: number[];
+      teacherId: string;
+    }) => createSubject(subjectName, daysOfWeek, teacherId),
+    onSuccess: () => console.log("Subject create success"),
   });
 
   const { data: allTeachers } = teachersData || {};
@@ -23,13 +37,11 @@ const Subject = () => {
 
     // Extract all checked days into an array of numbers: [1, 3, 5]
     const daysOfWeek = formData.getAll("days").map((val) => Number(val));
-
-    const payload = {
+    mutation.mutate({
       subjectName,
       teacherId,
       daysOfWeek,
-    };
-    console.log("PAYLOAD", payload);
+    });
   }
 
   return (
