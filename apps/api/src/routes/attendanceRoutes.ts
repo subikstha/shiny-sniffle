@@ -10,7 +10,7 @@ const router = Router();
 router.post(
   "/bulk",
   authenticateToken,
-  requireRole("teacher"),
+  requireRole(["teacher", "admin"]),
   validateBody(bulkAttendanceSchema),
   recordBulkAttendance,
 );

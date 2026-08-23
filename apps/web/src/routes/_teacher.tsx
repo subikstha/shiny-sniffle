@@ -10,10 +10,18 @@ export const Route = createFileRoute("/_teacher")({
       queryFn: getMe,
     });
     const user = userResponse?.user;
+    console.log("RAW USER RESPONSE:", userResponse);
+    console.log("EXTRACTED ROLES:", userResponse?.user?.roles);
+
     if (!user) {
       throw redirect({ to: "/login" });
     }
-    if (user.role !== "teacher") {
+
+    const allowedRoles = ["admin", "teacher"];
+    const hasAccess = user.roles?.some((role: string) =>
+      allowedRoles.includes(role),
+    );
+    if (!hasAccess) {
       throw redirect({ to: "/student-dashboard" });
     }
   },

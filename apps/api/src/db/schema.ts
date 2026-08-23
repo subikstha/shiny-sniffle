@@ -24,7 +24,7 @@ export const users = pgTable("users", {
   email: varchar("email", { length: 255 }).notNull().unique(),
   username: varchar("username", { length: 50 }).notNull().unique(),
   password: varchar("password", { length: 255 }).notNull(),
-  role: roleEnum("role").default("student"),
+  roles: roleEnum("roles").array().notNull().default(["student"]),
   // Profile data
   firstName: varchar("first_name", { length: 255 }),
   lastName: varchar("last_name", { length: 255 }),

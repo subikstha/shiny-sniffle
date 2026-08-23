@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { db } from "../db/connection.ts";
-import { users, type NewUser } from "../db/schema.ts";
+import { users } from "../db/schema.ts";
 import { generateToken } from "../utils/jwt.ts";
 import { comparePassword, hashPassword } from "../utils/password.ts";
 import { eq } from "drizzle-orm";
@@ -20,12 +20,12 @@ export const register = async (req: Request, res: Response) => {
         firstName: users.firstName,
         lastName: users.lastName,
         createdAt: users.createdAt,
-        role: users.role,
+        role: users.roles,
       });
     // Now sign in the user using JWT token
     const token = await generateToken({
       id: user.id,
-      role: user.role || "student",
+      roles: user.role || ["student"],
       email: user.email,
     });
 
@@ -67,7 +67,7 @@ export const login = async (req: Request, res: Response) => {
     }
 
     const token = await generateToken({
-      role: user.role || "student",
+      roles: user.roles || ["student"],
       email: user.email,
       id: user.id,
     });
@@ -115,7 +115,7 @@ export const getMe = async (req: AuthenticatedRequest, res: Response) => {
         id: users.id,
         email: users.email,
         username: users.username,
-        role: users.role,
+        roles: users.roles,
         firstName: users.firstName,
         lastName: users.lastName,
       })

@@ -25,7 +25,7 @@ const seed = async () => {
           password: hashedPassword,
           firstName: user.firstName,
           lastName: user.lastName,
-          role: user.role as "student" | "teacher",
+          roles: user.role as unknown as ("teacher" | "student" | "admin")[],
         });
       }),
     );

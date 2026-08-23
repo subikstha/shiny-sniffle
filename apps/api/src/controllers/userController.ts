@@ -21,15 +21,17 @@ export async function getAllUsers(req: Request, res: Response) {
 export async function getAllStudents(req: AuthenticatedRequest, res: Response) {
   try {
     const allStudents = await db.query.users.findMany({
-      where: eq(users.role, 'student'),
+      where: eq(users.roles, ["student"]),
       orderBy: asc(users.firstName),
       columns: {
-        password: false // Exclude the password field
-      }
-    })
-    return res.status(200).json({ data: allStudents })
+        password: false, // Exclude the password field
+      },
+    });
+    return res.status(200).json({ data: allStudents });
   } catch (e) {
     console.error("Error getting all students", e);
-    return res.status(500).json({ message: "Something went wrong when getting all the students" })
+    return res
+      .status(500)
+      .json({ message: "Something went wrong when getting all the students" });
   }
 }
