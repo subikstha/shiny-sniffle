@@ -15,3 +15,12 @@ type TeachersData = {
 }[];
 
 type GetAllTeachersResponse = APIResponse<TeachersData>;
+
+type SubjectsData = {
+  id: string;
+  subjectName: string;
+  teacherId: string;
+  createdAt: string;
+}[];
+
+type GetAllSubjectsResponse = APIResponse<SubjectsData>;

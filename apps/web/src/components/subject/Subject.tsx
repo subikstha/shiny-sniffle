@@ -1,15 +1,22 @@
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { days } from "../../constants";
 import { getAllTeachers } from "../../api/users";
 import type React from "react";
-import { createSubject } from "../../api/subject";
+import { createSubject, getAllSubjects } from "../../api/subject";
 // TODO: Need to fetch the teacher from the backend
 const Subject = () => {
   // TODO: List all the available subjects with their respective teachers
   // Add a modal with form when admin clicks add subject
+  const queryClient = useQueryClient();
   const { isLoading: isTeachersLoading, data: teachersData } = useQuery({
     queryKey: ["get-teachers"],
     queryFn: () => getAllTeachers(),
+    staleTime: 30000,
+  });
+
+  const { isLoading: isSubjectsLoading, data: subjectsData } = useQuery({
+    queryKey: ["get-subjects"],
+    queryFn: () => getAllSubjects(),
     staleTime: 30000,
   });
 
@@ -23,9 +30,14 @@ const Subject = () => {
       daysOfWeek: number[];
       teacherId: string;
     }) => createSubject(subjectName, daysOfWeek, teacherId),
-    onSuccess: () => console.log("Subject create success"),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ["get-subjects"],
+      });
+    },
   });
 
+  const { data: allSubjects } = subjectsData || {};
   const { data: allTeachers } = teachersData || {};
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -54,7 +66,19 @@ const Subject = () => {
 
   return (
     <div>
-      <h2 className="mb-4 text-2xl">Create Subject</h2>
+      <div>
+        <h2 className="mb-4 text-2xl">All Subjects</h2>
+        {isSubjectsLoading ? (
+          <div>Subjects Loading...</div>
+        ) : (
+          <ul>
+            {allSubjects?.map((subject) => (
+              <li key={subject.id}>{subject.subjectName}</li>
+            ))}
+          </ul>
+        )}
+      </div>
+      <h2 className="my-4 text-2xl">Create Subject</h2>
       <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
         <div className="flex flex-col">
           <label htmlFor="name" className="mb-2 font-semibold">

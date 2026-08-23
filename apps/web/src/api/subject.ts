@@ -1,3 +1,9 @@
+export async function getAllSubjects(): Promise<GetAllSubjectsResponse> {
+  const response = await fetch("/api/subjects/");
+  const data = await response.json();
+  return data;
+}
+
 export async function createSubject(
   subjectName: string,
   daysOfWeek: number[],
