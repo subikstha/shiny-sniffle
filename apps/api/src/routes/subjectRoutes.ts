@@ -1,6 +1,10 @@
 import { Router } from "express";
 import { validateBody } from "../middleware/validation.ts";
-import { create, getAllSubjects } from "../controllers/subjectController.ts";
+import {
+  create,
+  getAllSubjects,
+  getSubject,
+} from "../controllers/subjectController.ts";
 import z from "zod";
 import { authenticateToken } from "../middleware/auth.ts";
 import { requireRole } from "../middleware/requireRole.ts";
@@ -14,6 +18,12 @@ const createSubjectSchema = z.object({
 });
 
 router.get("/", authenticateToken, requireRole(["teacher"]), getAllSubjects);
+router.get(
+  "/:subjectId",
+  authenticateToken,
+  requireRole(["teacher"]),
+  getSubject,
+);
 
 router.post(
   "/",

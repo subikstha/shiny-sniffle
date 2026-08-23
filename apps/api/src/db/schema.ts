@@ -170,6 +170,7 @@ export const subjectRelations = relations(subject, ({ one, many }) => ({
   }),
   notes: many(notes),
   attendances: many(attendance),
+  schedules: many(classSchedules),
 }));
 
 export const notesRelations = relations(notes, ({ one }) => ({
@@ -210,17 +211,6 @@ export const subjectSchedulesRelations = relations(
     }),
   }),
 );
-
-// Update subjectRelations
-export const classRelations = relations(subject, ({ one, many }) => ({
-  teacher: one(users, {
-    fields: [subject.teacherId],
-    references: [users.id],
-  }),
-  notes: many(notes),
-  attendances: many(attendance),
-  schedules: many(classSchedules), // Linked schedule
-}));
 
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;

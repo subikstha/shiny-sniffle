@@ -10,7 +10,7 @@ type TeachersData = {
   username: string;
   firstName?: string;
   lastName?: string;
-  roles: string[];
+  roles: ("teacher" | "student" | "admin")[];
   createdAt: string;
 }[];
 
@@ -21,6 +21,21 @@ type SubjectsData = {
   subjectName: string;
   teacherId: string;
   createdAt: string;
+  schedules: {
+    id: string;
+    subjectId: string;
+    dayOfWeek: number;
+  }[];
+  teacher: {
+    id: string;
+    email: string;
+    username: string;
+    roles: ("teacher" | "student" | "admin")[];
+    firstName: string | null;
+    lastName: string | null;
+    createdAt: string;
+    updatedAt: string;
+  };
 }[];
 
 type GetAllSubjectsResponse = APIResponse<SubjectsData>;

@@ -1,3 +1,4 @@
+import { eq } from "drizzle-orm";
 import db from "../db/connection.ts";
 import { classSchedules, subject } from "../db/schema.ts";
 import type { AuthenticatedRequest } from "../middleware/auth.ts";
@@ -8,7 +9,16 @@ export const getAllSubjects = async (
   res: Response,
 ) => {
   try {
-    const allSubjects = await db.query.subject.findMany();
+    const allSubjects = await db.query.subject.findMany({
+      with: {
+        schedules: true,
+        teacher: {
+          columns: {
+            password: false,
+          },
+        },
+      },
+    });
     return res.status(200).json({
       message: "All subjects retrieved successfully",
       data: allSubjects,
@@ -16,6 +26,32 @@ export const getAllSubjects = async (
   } catch (e) {
     console.error("Failed to get subjects", e);
     return res.status(500).json({ message: "Failed to get all subject" });
+  }
+};
+
+export const getSubject = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { subjectId } = req.params;
+    if (!subjectId) throw new Error("subjectId is required");
+    const result = await db.query.subject.findFirst({
+      where: eq(subject.id, subjectId),
+      with: {
+        schedules: true,
+        teacher: {
+          columns: {
+            password: false,
+          },
+        },
+      },
+    });
+
+    return res.status(200).json({
+      message: "Subject found",
+      data: result,
+    });
+  } catch (e) {
+    console.error("Failed to get the subject", e);
+    return res.status(500).json({ message: "Failed to get the subject" });
   }
 };
 

@@ -39,6 +39,7 @@ const Subject = () => {
 
   const { data: allSubjects } = subjectsData || {};
   const { data: allTeachers } = teachersData || {};
+  console.log("All subjects", allSubjects);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
