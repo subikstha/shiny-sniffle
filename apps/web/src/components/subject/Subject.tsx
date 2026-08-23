@@ -30,18 +30,26 @@ const Subject = () => {
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const formData = new FormData(form);
     // Extract single fields
     const subjectName = formData.get("name") as string;
     const teacherId = formData.get("teacher") as string;
 
     // Extract all checked days into an array of numbers: [1, 3, 5]
     const daysOfWeek = formData.getAll("days").map((val) => Number(val));
-    mutation.mutate({
-      subjectName,
-      teacherId,
-      daysOfWeek,
-    });
+    mutation.mutate(
+      {
+        subjectName,
+        teacherId,
+        daysOfWeek,
+      },
+      {
+        onSuccess: () => {
+          form.reset();
+        },
+      },
+    );
   }
 
   return (
@@ -59,6 +67,7 @@ const Subject = () => {
             id="name"
             className="border p-1.5 rounded-lg"
             required
+            disabled={mutation.isPending}
           />
         </div>
         <div className="flex flex-col">
@@ -71,6 +80,7 @@ const Subject = () => {
                   id={day.label}
                   name="days"
                   value={day.value}
+                  disabled={mutation.isPending}
                 />
                 <label htmlFor={day.label}>{day.label}</label>
               </div>
@@ -88,6 +98,7 @@ const Subject = () => {
               name="teacher"
               id="teacher"
               className="border p-1.5 rounded-lg"
+              disabled={mutation.isPending}
             >
               {allTeachers.map((teacher) => (
                 <option key={teacher.id} value={teacher.id}>
@@ -103,11 +114,17 @@ const Subject = () => {
         </div>
         <button
           type="submit"
+          disabled={mutation.isPending}
           className="rounded-lg bg-orange-500 text-white hover:bg-orange-600 py-3 cursor-pointer"
         >
-          Create Subject
+          {mutation.isPending ? "Creating Subject..." : "Create Subject"}
         </button>
       </form>
+      {mutation.isError && (
+        <p className="text-red-500 text-sm">
+          Failed to create subject. Please try again.
+        </p>
+      )}
     </div>
   );
 };
