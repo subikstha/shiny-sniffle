@@ -9,3 +9,11 @@ export async function getAllStudents() {
   const data = await response.json();
   return data;
 }
+
+export async function getAllTeachers(): Promise<GetAllTeachersResponse> {
+  const response = await fetch("/api/users/teachers", {
+    credentials: "include",
+  });
+  const data = await response.json();
+  return data;
+}

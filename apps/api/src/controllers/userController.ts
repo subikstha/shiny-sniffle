@@ -35,3 +35,20 @@ export async function getAllStudents(req: AuthenticatedRequest, res: Response) {
       .json({ message: "Something went wrong when getting all the students" });
   }
 }
+
+export async function getAllTeachers(req: AuthenticatedRequest, res: Response) {
+  try {
+    const allTeachers = await db.query.users.findMany({
+      where: eq(users.roles, ["teacher"]),
+      columns: {
+        password: false,
+      },
+    });
+    return res.status(200).json({ data: allTeachers });
+  } catch (e) {
+    console.error("Error getting all the teachers", e);
+    return res.status(500).json({
+      message: "Oops! Something went wrong when fetching all the teachers",
+    });
+  }
+}
