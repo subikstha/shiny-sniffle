@@ -1,9 +1,9 @@
 import {
   format,
-  isToday,
   startOfMonth,
   endOfMonth,
   eachDayOfInterval,
+  getDay,
 } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
 import { getAllStudents } from "../../api/users";
@@ -11,6 +11,7 @@ import { calendarContext } from "./CalendarProvider";
 import { useContext } from "react";
 import YearSelector from "./YearSelector";
 import MonthSelector from "./MonthSelector";
+import SubjectSelector from "./SubjectSelector";
 interface AllStudents {
   data: {
     id: string;
@@ -22,6 +23,13 @@ interface AllStudents {
 
 function Calendar() {
   const { state, dispatch } = useContext(calendarContext);
+  const activeDays =
+    state.allSubjects && state.selectedSubject
+      ? state.allSubjects
+          .find((subject) => subject.id === state.selectedSubject)
+          ?.schedules.map((sc) => sc.dayOfWeek)
+      : [];
+  console.log("Active days", activeDays);
   // Fetch all the students
   const { isLoading, data } = useQuery<AllStudents>({
     queryKey: ["allStudents"],
@@ -44,6 +52,7 @@ function Calendar() {
     <div>
       <div className="flex mb-4 justify-between">
         <YearSelector />
+        <SubjectSelector />
         <MonthSelector />
       </div>
       <table className="table-fixed w-full border border-gray-300 [&_td]:px-2 [&_td]:py-4">
@@ -78,7 +87,8 @@ function Calendar() {
                           key={date.toISOString()}
                           className="px-4! py-2 whitespace-nowrap border-r border-b border-gray-300"
                         >
-                          {format(date, "MMM")} {format(date, "d")}
+                          {format(date, "MMM")} {format(date, "d")} (
+                          {format(date, "EEE")}){/* {getDay(date)} */}
                         </td>
                       ))}
                     </tr>
@@ -89,7 +99,9 @@ function Calendar() {
                             key={date.toISOString()}
                             className="px-4! py-2 whitespace-nowrap border-r border-b border-gray-300"
                           >
-                            &nbsp;
+                            {activeDays &&
+                              activeDays.length > 0 &&
+                              activeDays.includes(getDay(date)) && <>hello</>}
                           </td>
                         ))}
                       </tr>

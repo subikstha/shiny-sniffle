@@ -1,5 +1,5 @@
 export async function getAllSubjects(): Promise<GetAllSubjectsResponse> {
-  const response = await fetch("/api/subjects/");
+  const response = await fetch("/api/subjects/", { credentials: "include" });
   const data = await response.json();
   return data;
 }

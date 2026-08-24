@@ -1,15 +1,8 @@
-import { createLazyFileRoute } from '@tanstack/react-router'
-import Calendar from '../../../components/calendar/Calendar'
-import CalendarProvider from '../../../components/calendar/CalendarProvider'
+import { createLazyFileRoute } from "@tanstack/react-router";
+import AttendanceHome from "../../../components/calendar/AttendanceHome";
 
 export const Route = createLazyFileRoute(
-  '/_teacher/teacher-dashboard/attendance',
+  "/_teacher/teacher-dashboard/attendance",
 )({
-  component: () => (
-    <div>
-      <CalendarProvider>
-        <Calendar />
-      </CalendarProvider>
-    </div>
-  ),
-})
+  component: AttendanceHome,
+});
