@@ -29,6 +29,13 @@
       "when": 1787466929082,
       "tag": "0003_needy_thundra",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1787581547675,
+      "tag": "0004_fuzzy_wallflower",
+      "breakpoints": true
     }
   ]
 }

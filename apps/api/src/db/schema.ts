@@ -36,35 +36,46 @@ export const users = pgTable("users", {
     .notNull(),
 });
 
-export const subject = pgTable(
-  "subject",
-  {
-    id: uuid("id").primaryKey().defaultRandom(),
-    subjectName: varchar("subject_name", { length: 255 }).notNull().unique(),
-    // Foreign key to teacher
-    teacherId: uuid("teacher_id")
-      .notNull()
-      .references(() => users.id, {
-        onDelete: "cascade",
-      }),
-    // Metadata and timestamps
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at")
-      .defaultNow()
-      .$onUpdate(() => new Date())
-      .notNull(),
-  },
-  // This creates a database index on the teacherId column
-  (table) => [index("subjects_teacher_idx").on(table.teacherId)],
-);
+export const subject = pgTable("subject", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  subjectName: varchar("subject_name", { length: 255 }).notNull().unique(),
+  // Metadata and timestamps
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull(),
+});
+
+export const subjectOfferings = pgTable("subject_offerings", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  subjectId: uuid("subject_id")
+    .notNull()
+    .references(() => subject.id, {
+      onDelete: "cascade",
+    }),
+  teacherId: uuid("teacher_id")
+    .notNull()
+    .references(() => users.id, {
+      onDelete: "cascade",
+    }),
+  startDate: date("start_date").notNull(),
+  endDate: date("end_date").notNull(),
+  // Metadata and timestamps
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull(),
+});
 
 export const classSchedules = pgTable(
   "class_schedules",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    subjectId: uuid("subject_id")
+    subjectOfferingId: uuid("subject_offering_id")
       .notNull()
-      .references(() => subject.id, { onDelete: "cascade" }),
+      .references(() => subjectOfferings.id, { onDelete: "cascade" }),
 
     // Single integer day (0 = Sun, 1 = Mon, ..., 6 = Sat)
     dayOfWeek: integer("day_of_week").notNull(),
@@ -80,9 +91,9 @@ export const classSchedules = pgTable(
       .notNull(),
   },
   (table) => [
-    index("schedules_subject_idx").on(table.subjectId),
+    index("schedules_subject_idx").on(table.subjectOfferingId),
     // Ensures a subject can't have duplicate schedule entries for the same day
-    unique().on(table.subjectId, table.dayOfWeek),
+    unique().on(table.subjectOfferingId, table.dayOfWeek),
   ],
 );
 
@@ -100,12 +111,9 @@ export const attendance = pgTable(
     studentId: uuid("student_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    teacherId: uuid("teacher_id")
+    subjectOfferingId: uuid("subject_offering_id")
       .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    subjectId: uuid("subject_id")
-      .notNull()
-      .references(() => subject.id, { onDelete: "cascade" }),
+      .references(() => subjectOfferings.id, { onDelete: "cascade" }),
 
     // Attendance details
     date: date("date", { mode: "string" }).notNull(), // Stores "YYYY-MM-DD"
@@ -120,9 +128,11 @@ export const attendance = pgTable(
       .notNull(),
   },
   (table) => [
-    // Prevents double-marking the same student for the same subject on the same day
-    unique().on(table.studentId, table.subjectId, table.date),
+    unique().on(table.studentId, table.subjectOfferingId, table.date),
+
     index("attendance_student_idx").on(table.studentId),
+
+    index("attendance_offering_idx").on(table.subjectOfferingId),
   ],
 );
 
@@ -130,13 +140,9 @@ export const notes = pgTable(
   "notes",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    // Foreign keys
-    teacherId: uuid("teacher_id")
+    subjectOfferingId: uuid("subject_offering_id")
       .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    subjectId: uuid("subject_id")
-      .notNull()
-      .references(() => subject.id, { onDelete: "cascade" }),
+      .references(() => subjectOfferings.id, { onDelete: "cascade" }),
     // Core metadata
     title: varchar("title", { length: 255 }).notNull(),
     content: text("content"),
@@ -149,38 +155,40 @@ export const notes = pgTable(
       .$onUpdate(() => new Date())
       .notNull(),
   },
-  (table) => [
-    index("notes_subject_idx").on(table.subjectId),
-    index("notes_teacher_idx").on(table.teacherId),
-  ],
+  (table) => [index("notes_offering_idx").on(table.subjectOfferingId)],
 );
 
 // Relations
 export const userRelations = relations(users, ({ many }) => ({
-  subjectsTaught: many(subject),
-  notesCreated: many(notes),
+  subjectOfferingsTaught: many(subjectOfferings),
   studentAttendances: many(attendance, { relationName: "student_attendance" }),
-  teacherAttendances: many(attendance, { relationName: "teacher_attendance" }),
 }));
 
-export const subjectRelations = relations(subject, ({ one, many }) => ({
-  teacher: one(users, {
-    fields: [subject.teacherId],
-    references: [users.id],
-  }),
-  notes: many(notes),
-  attendances: many(attendance),
-  schedules: many(classSchedules),
+export const subjectRelations = relations(subject, ({ many }) => ({
+  offerings: many(subjectOfferings),
 }));
+
+export const subjectOfferingsRelations = relations(
+  subjectOfferings,
+  ({ one, many }) => ({
+    subject: one(subject, {
+      fields: [subjectOfferings.subjectId],
+      references: [subject.id],
+    }),
+    teacher: one(users, {
+      fields: [subjectOfferings.teacherId],
+      references: [users.id],
+    }),
+    notes: many(notes),
+    attendances: many(attendance),
+    schedules: many(classSchedules),
+  }),
+);
 
 export const notesRelations = relations(notes, ({ one }) => ({
-  teacher: one(users, {
-    fields: [notes.teacherId],
-    references: [users.id],
-  }),
-  subject: one(subject, {
-    fields: [notes.subjectId],
-    references: [subject.id],
+  subjectOffering: one(subjectOfferings, {
+    fields: [notes.subjectOfferingId],
+    references: [subjectOfferings.id],
   }),
 }));
 
@@ -190,14 +198,9 @@ export const attendanceRelations = relations(attendance, ({ one }) => ({
     references: [users.id],
     relationName: "student_attendance",
   }),
-  teacher: one(users, {
-    fields: [attendance.teacherId],
-    references: [users.id],
-    relationName: "teacher_attendance",
-  }),
-  subject: one(subject, {
-    fields: [attendance.subjectId],
-    references: [subject.id],
+  subjectOffering: one(subjectOfferings, {
+    fields: [attendance.subjectOfferingId],
+    references: [subjectOfferings.id],
   }),
 }));
 
@@ -205,9 +208,9 @@ export const attendanceRelations = relations(attendance, ({ one }) => ({
 export const subjectSchedulesRelations = relations(
   classSchedules,
   ({ one }) => ({
-    subject: one(subject, {
-      fields: [classSchedules.subjectId],
-      references: [subject.id],
+    subjectOffering: one(subjectOfferings, {
+      fields: [classSchedules.subjectOfferingId],
+      references: [subjectOfferings.id],
     }),
   }),
 );
