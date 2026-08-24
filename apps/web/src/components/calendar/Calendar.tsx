@@ -12,6 +12,7 @@ import { useContext } from "react";
 import YearSelector from "./YearSelector";
 import MonthSelector from "./MonthSelector";
 import SubjectSelector from "./SubjectSelector";
+import AttendanceCell from "./AttendanceCell";
 interface AllStudents {
   data: {
     id: string;
@@ -29,6 +30,8 @@ function Calendar() {
           .find((subject) => subject.id === state.selectedSubject)
           ?.schedules.map((sc) => sc.dayOfWeek)
       : [];
+  const isAnActiveDay = (date: Date) =>
+    activeDays && activeDays.length > 0 && activeDays.includes(getDay(date));
   console.log("Active days", activeDays);
   // Fetch all the students
   const { isLoading, data } = useQuery<AllStudents>({
@@ -97,11 +100,15 @@ function Calendar() {
                         {dates.map((date) => (
                           <td
                             key={date.toISOString()}
-                            className="px-4! py-2 whitespace-nowrap border-r border-b border-gray-300"
+                            className={`whitespace-nowrap border-r border-b border-gray-300 ${isAnActiveDay(date) ? "py-0! px-0!" : "py-2! px-4!"}`}
                           >
                             {activeDays &&
-                              activeDays.length > 0 &&
-                              activeDays.includes(getDay(date)) && <>hello</>}
+                            activeDays.length > 0 &&
+                            activeDays.includes(getDay(date)) ? (
+                              <AttendanceCell buttonClasses="w-full h-full cursor-pointer flex py-4 px-4 justify-center" />
+                            ) : (
+                              <>&nbsp;</>
+                            )}
                           </td>
                         ))}
                       </tr>
