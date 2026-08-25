@@ -1,5 +1,13 @@
 import React, { createContext, useReducer } from "react";
 
+type AttendanceRecords = {
+  studentId: string;
+  attendances: {
+    date: string;
+    status: "present" | "absent";
+  }[];
+}[];
+
 type CalendarState = {
   today: Date;
   year: number;
@@ -37,6 +45,10 @@ type CalendarAction =
   | {
       type: "setAllSubjectOfferings";
       payload: SubjectOfferingData;
+    }
+  | {
+      type: "setAttendanceRecords";
+      payload: AttendanceRecords;
     };
 
 function calendarReducer(state: CalendarState, action: CalendarAction) {
@@ -65,6 +77,11 @@ function calendarReducer(state: CalendarState, action: CalendarAction) {
       return {
         ...state,
         subjectOfferings: action.payload,
+      };
+    case "setAttendanceRecords":
+      return {
+        ...state,
+        attendanceRecords: action.payload,
       };
   }
 }
