@@ -4,8 +4,8 @@ type CalendarState = {
   today: Date;
   year: number;
   month: number;
-  allSubjects: SubjectsData | null;
-  selectedSubject: string;
+  subjectOfferings: SubjectOfferingData | null;
+  selectedSubjectOfferingId: string;
   attendanceRecords:
     | {
         studentId: string;
@@ -31,12 +31,12 @@ type CalendarAction =
       payload: Date;
     }
   | {
-      type: "setSubject";
+      type: "setSubjectOfferingId";
       payload: string;
     }
   | {
-      type: "setAllSubjects";
-      payload: SubjectsData;
+      type: "setAllSubjectOfferings";
+      payload: SubjectOfferingData;
     };
 
 function calendarReducer(state: CalendarState, action: CalendarAction) {
@@ -56,15 +56,15 @@ function calendarReducer(state: CalendarState, action: CalendarAction) {
         ...state,
         today: action.payload,
       };
-    case "setSubject":
+    case "setSubjectOfferingId":
       return {
         ...state,
-        selectedSubject: action.payload,
+        selectedSubjectOfferingId: action.payload,
       };
-    case "setAllSubjects":
+    case "setAllSubjectOfferings":
       return {
         ...state,
-        allSubjects: action.payload,
+        subjectOfferings: action.payload,
       };
   }
 }
@@ -74,8 +74,8 @@ const initialCalendarState = {
   year: new Date().getFullYear(),
   month: new Date().getMonth(),
   attendanceRecords: null,
-  selectedSubject: "",
-  allSubjects: null,
+  selectedSubjectOfferingId: "",
+  subjectOfferings: null,
 };
 
 export const calendarContext = createContext(

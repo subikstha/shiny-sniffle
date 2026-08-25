@@ -25,11 +25,17 @@ interface AllStudents {
 function Calendar() {
   const { state, dispatch } = useContext(calendarContext);
   const activeDays =
-    state.allSubjects && state.selectedSubject
-      ? state.allSubjects
-          .find((subject) => subject.id === state.selectedSubject)
+    state.subjectOfferings && state.selectedSubjectOfferingId
+      ? state.subjectOfferings
+          .find((subject) => subject.id === state.selectedSubjectOfferingId)
           ?.schedules.map((sc) => sc.dayOfWeek)
       : [];
+  console.log(
+    "Active days",
+    activeDays,
+    state.subjectOfferings,
+    state.selectedSubjectOfferingId,
+  );
   const isAnActiveDay = (date: Date) =>
     activeDays && activeDays.length > 0 && activeDays.includes(getDay(date));
   console.log("Active days", activeDays);

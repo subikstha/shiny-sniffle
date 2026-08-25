@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authenticateToken } from "../middleware/auth.ts";
 import { validateBody } from "../middleware/validation.ts";
-import { create } from "../controllers/subjectOfferingController.ts";
+import { create, getAll } from "../controllers/subjectOfferingController.ts";
 import z from "zod";
 
 const router = Router();
@@ -13,6 +13,8 @@ const createSubjectOfferingSchema = z.object({
   endDate: z.string().min(1, { message: "subject end date is required" }),
   daysOfWeek: z.array(z.number()),
 });
+
+router.get("/", authenticateToken, getAll);
 
 router.post(
   "/",

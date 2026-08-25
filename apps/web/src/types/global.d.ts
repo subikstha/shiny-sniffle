@@ -45,7 +45,7 @@ type SingleSubjectData = {
   updatedAt: string;
 };
 
-type SubjectOfferingData = {
+type SingleSubjectOfferingData = {
   id: string;
   subjectId: string;
   teacherId: string;
@@ -53,6 +53,9 @@ type SubjectOfferingData = {
   endDate: string;
   createdAt: Date;
   updatedAt: Date;
+  subject: {
+    subjectName: string;
+  };
   schedules: {
     id: string;
     subjectOfferingId: string;
@@ -60,7 +63,9 @@ type SubjectOfferingData = {
     createdAt: Date;
     updatedAt: Date;
   }[];
-}[];
+};
+
+type SubjectOfferingData = SingleSubjectOfferingData[];
 
 type SubjectOfferingResponse = APIResponse<SubjectOfferingData>;
 

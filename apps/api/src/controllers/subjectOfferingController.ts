@@ -11,8 +11,14 @@ export const getAll = async function (
     const allSubjectOfferings = await db.query.subjectOfferings.findMany({
       with: {
         schedules: true,
+        subject: {
+          columns: {
+            subjectName: true,
+          },
+        },
       },
     });
+    console.log("Subject offerings in node", allSubjectOfferings);
 
     return res.status(200).json({
       message: "Subject offerings got successfully",
