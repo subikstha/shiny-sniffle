@@ -1,12 +1,12 @@
 import { useContext, useEffect } from "react";
 import { calendarContext } from "./CalendarProvider";
 import { useQuery } from "@tanstack/react-query";
-import { getAllSubjects } from "../../api/subject";
+import { getAllSubjectOfferings } from "../../api/subject";
 
 const SubjectSelector = () => {
   const { isLoading, data: subjectsData } = useQuery({
     queryKey: ["get-subjects"],
-    queryFn: () => getAllSubjects(),
+    queryFn: () => getAllSubjectOfferings(),
   });
   const { data: allSubjects } = subjectsData || {};
   const { state, dispatch } = useContext(calendarContext);

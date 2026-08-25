@@ -60,7 +60,7 @@ type SubjectOfferingData = {
     createdAt: Date;
     updatedAt: Date;
   }[];
-};
+}[];
 
 type SubjectOfferingResponse = APIResponse<SubjectOfferingData>;
 

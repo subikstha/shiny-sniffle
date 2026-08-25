@@ -20,7 +20,7 @@ const SubjectOffering = ({ subjectId }: Props) => {
   });
 
   const { isLoading: isSubjectLoading, data: subjectData } = useQuery({
-    queryKey: ["get-single-subject"],
+    queryKey: ["get-single-subject", subjectId],
     queryFn: () => getSingleSubject(subjectId),
     staleTime: 30000,
   });
