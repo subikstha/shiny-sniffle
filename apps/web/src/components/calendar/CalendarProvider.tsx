@@ -49,6 +49,13 @@ type CalendarAction =
   | {
       type: "setAttendanceRecords";
       payload: AttendanceRecords;
+    }
+  | {
+      type: "toggleAttendance";
+      payload: {
+        studentId: string;
+        date: string;
+      };
     };
 
 function calendarReducer(state: CalendarState, action: CalendarAction) {
@@ -83,6 +90,35 @@ function calendarReducer(state: CalendarState, action: CalendarAction) {
         ...state,
         attendanceRecords: action.payload,
       };
+    case "toggleAttendance": {
+      const { studentId, date } = action.payload;
+
+      return {
+        ...state,
+
+        attendanceRecords:
+          state.attendanceRecords?.map((record) => {
+            if (record.studentId !== studentId) {
+              return record;
+            }
+
+            return {
+              ...record,
+
+              attendances: record.attendances.map((attendance) => {
+                if (attendance.date !== date) {
+                  return attendance;
+                }
+
+                return {
+                  ...attendance,
+                  status: attendance.status === "absent" ? "present" : "absent",
+                };
+              }),
+            };
+          }) ?? null,
+      };
+    }
   }
 }
 

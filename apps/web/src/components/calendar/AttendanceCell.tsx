@@ -1,24 +1,34 @@
-import { useState } from "react";
+import { useContext } from "react";
+import { calendarContext } from "./CalendarProvider";
 
 interface Props {
   buttonClasses?: string;
+  date: string;
+  studentId: string;
+  status: "absent" | "present";
 }
-const AttendanceCell = ({ buttonClasses }: Props) => {
-  const [attendanceStatus, setAttendanceStatus] = useState<
-    "Absent" | "Present"
-  >("Absent");
+
+const AttendanceCell = ({ buttonClasses, date, studentId, status }: Props) => {
+  const { dispatch } = useContext(calendarContext);
+
   const handleClick = () => {
-    setAttendanceStatus((prev) => {
-      if (prev === "Absent") return "Present";
-      if (prev === "Present") return "Absent";
+    dispatch({
+      type: "toggleAttendance",
+      payload: {
+        studentId,
+        date,
+      },
     });
   };
+
   return (
     <button
-      className={`${buttonClasses} bg-red-700 text-white`}
+      className={`${buttonClasses} ${
+        status === "present" ? "bg-green-700" : "bg-red-700"
+      } text-white`}
       onClick={handleClick}
     >
-      {attendanceStatus}
+      {status === "present" ? "Present" : "Absent"}
     </button>
   );
 };

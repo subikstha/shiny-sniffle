@@ -149,20 +149,36 @@ function Calendar() {
                     </tr>
                     {allStudents.map((student) => (
                       <tr key={student.id}>
-                        {dates.map((date) => (
-                          <td
-                            key={date.toISOString()}
-                            className={`whitespace-nowrap border-r border-b border-gray-300 ${isAnActiveDay(date) ? "py-0! px-0!" : "py-2! px-4!"}`}
-                          >
-                            {activeDays &&
-                            activeDays.length > 0 &&
-                            activeDays.includes(getDay(date)) ? (
-                              <AttendanceCell buttonClasses="w-full h-full cursor-pointer flex py-4 px-4 justify-center" />
-                            ) : (
-                              <>&nbsp;</>
-                            )}
-                          </td>
-                        ))}
+                        {dates.map((date) => {
+                          const dateString = format(date, "yyyy-MM-dd");
+
+                          const studentRecord = state.attendanceRecords?.find(
+                            (record) => record.studentId === student.id,
+                          );
+
+                          const attendance = studentRecord?.attendances.find(
+                            (record) => record.date === dateString,
+                          );
+                          return (
+                            <td
+                              key={date.toISOString()}
+                              className={`whitespace-nowrap border-r border-b border-gray-300 ${isAnActiveDay(date) ? "py-0! px-0!" : "py-2! px-4!"}`}
+                            >
+                              {activeDays &&
+                              activeDays.length > 0 &&
+                              activeDays.includes(getDay(date)) ? (
+                                <AttendanceCell
+                                  buttonClasses="w-full h-full cursor-pointer flex py-4 px-4 justify-center"
+                                  date={format(date, "yyyy-MM-dd")}
+                                  studentId={student.id}
+                                  status={attendance?.status ?? "absent"}
+                                />
+                              ) : (
+                                <>&nbsp;</>
+                              )}
+                            </td>
+                          );
+                        })}
                       </tr>
                     ))}
                   </tbody>
