@@ -8,7 +8,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { getAllStudents } from "../../api/users";
 import { calendarContext } from "./CalendarProvider";
-import { useContext } from "react";
+import { useContext, useEffect, useMemo } from "react";
 import YearSelector from "./YearSelector";
 import MonthSelector from "./MonthSelector";
 import SubjectSelector from "./SubjectSelector";
@@ -24,6 +24,7 @@ interface AllStudents {
 
 function Calendar() {
   const { state, dispatch } = useContext(calendarContext);
+
   const activeDays =
     state.subjectOfferings && state.selectedSubjectOfferingId
       ? state.subjectOfferings
@@ -46,7 +47,7 @@ function Calendar() {
     staleTime: 300000,
   });
 
-  const allStudents = data?.data ?? [];
+  const allStudents = useMemo(() => data?.data ?? [], [data?.data]);
 
   // Date logic
   const dates = eachDayOfInterval({
@@ -55,6 +56,51 @@ function Calendar() {
   });
   console.log("All dates are", dates);
 
+  useEffect(() => {
+    if (allStudents.length === 0 || !state.selectedSubjectOfferingId) {
+      return;
+    }
+
+    const selectedOffering = state.subjectOfferings?.find(
+      (offering) => offering.id === state.selectedSubjectOfferingId,
+    );
+
+    if (!selectedOffering) return;
+
+    const activeDays = selectedOffering.schedules.map(
+      (schedule) => schedule.dayOfWeek,
+    );
+
+    const dates = eachDayOfInterval({
+      start: startOfMonth(new Date(state.year, state.month, 1)),
+      end: endOfMonth(new Date(state.year, state.month, 1)),
+    });
+
+    const classDates = dates.filter((date) =>
+      activeDays.includes(getDay(date)),
+    );
+
+    const attendanceRecords = allStudents.map((student) => ({
+      studentId: student.id,
+
+      attendances: classDates.map((date) => ({
+        date: format(date, "yyyy-MM-dd"),
+        status: "absent" as const,
+      })),
+    }));
+
+    dispatch({
+      type: "setAttendanceRecords",
+      payload: attendanceRecords,
+    });
+  }, [
+    state.month,
+    state.year,
+    state.selectedSubjectOfferingId,
+    state.subjectOfferings,
+    allStudents,
+    dispatch,
+  ]);
   if (isLoading) return <div>Loading Data...</div>;
 
   return (
