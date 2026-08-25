@@ -38,4 +38,34 @@ type SubjectsData = {
   };
 }[];
 
+type SingleSubjectData = {
+  id: string;
+  subjectName: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+type SubjectOfferingData = {
+  subjectOffering: {
+    id: string;
+    subjectId: string;
+    teacherId: string;
+    startDate: string;
+    endDate: string;
+    createdAt: Date;
+    updatedAt: Date;
+  };
+  classSchedules: {
+    id: string;
+    subjectOfferingId: string;
+    dayOfWeek: number;
+    createdAt: Date;
+    updatedAt: Date;
+  }[];
+};
+
+type CreateSubjectOfferingResponse = APIResponse<SubjectOfferingData>;
+
+type GetSingleSubjectResponse = APIResponse<SingleSubjectData>;
+
 type GetAllSubjectsResponse = APIResponse<SubjectsData>;

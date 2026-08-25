@@ -1,18 +1,18 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { days } from "../../constants";
-import { getAllTeachers } from "../../api/users";
 import type React from "react";
 import { createSubject, getAllSubjects } from "../../api/subject";
+import { Link } from "@tanstack/react-router";
 // TODO: Need to fetch the teacher from the backend
 const Subject = () => {
   // TODO: List all the available subjects with their respective teachers
   // Add a modal with form when admin clicks add subject
   const queryClient = useQueryClient();
-  const { isLoading: isTeachersLoading, data: teachersData } = useQuery({
-    queryKey: ["get-teachers"],
-    queryFn: () => getAllTeachers(),
-    staleTime: 30000,
-  });
+  // const { isLoading: isTeachersLoading, data: teachersData } = useQuery({
+  //   queryKey: ["get-teachers"],
+  //   queryFn: () => getAllTeachers(),
+  //   staleTime: 30000,
+  // });
 
   const { isLoading: isSubjectsLoading, data: subjectsData } = useQuery({
     queryKey: ["get-subjects"],
@@ -21,15 +21,8 @@ const Subject = () => {
   });
 
   const mutation = useMutation({
-    mutationFn: ({
-      subjectName,
-      daysOfWeek,
-      teacherId,
-    }: {
-      subjectName: string;
-      daysOfWeek: number[];
-      teacherId: string;
-    }) => createSubject(subjectName, daysOfWeek, teacherId),
+    mutationFn: ({ subjectName }: { subjectName: string }) =>
+      createSubject(subjectName),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
         queryKey: ["get-subjects"],
@@ -38,7 +31,6 @@ const Subject = () => {
   });
 
   const { data: allSubjects } = subjectsData || {};
-  const { data: allTeachers } = teachersData || {};
   console.log("All subjects", allSubjects);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -47,15 +39,11 @@ const Subject = () => {
     const formData = new FormData(form);
     // Extract single fields
     const subjectName = formData.get("name") as string;
-    const teacherId = formData.get("teacher") as string;
 
     // Extract all checked days into an array of numbers: [1, 3, 5]
-    const daysOfWeek = formData.getAll("days").map((val) => Number(val));
     mutation.mutate(
       {
         subjectName,
-        teacherId,
-        daysOfWeek,
       },
       {
         onSuccess: () => {
@@ -74,7 +62,15 @@ const Subject = () => {
         ) : (
           <ul>
             {allSubjects?.map((subject) => (
-              <li key={subject.id}>{subject.subjectName}</li>
+              <li key={subject.id} className="flex justify-between">
+                <span>{subject.subjectName}</span>
+                <Link
+                  to="/teacher-dashboard/subject-offering/$subjectId"
+                  params={{ subjectId: subject.id }}
+                >
+                  Create Offering
+                </Link>
+              </li>
             ))}
           </ul>
         )}
@@ -112,31 +108,7 @@ const Subject = () => {
             ))}
           </div>
         </div>
-        <div className="flex flex-col">
-          <label htmlFor="teacher" className="mb-2 font-semibold">
-            Select Teacher
-          </label>
-          {isTeachersLoading ? (
-            <div>Loading Teachers...</div>
-          ) : allTeachers && allTeachers.length > 0 ? (
-            <select
-              name="teacher"
-              id="teacher"
-              className="border p-1.5 rounded-lg"
-              disabled={mutation.isPending}
-            >
-              {allTeachers.map((teacher) => (
-                <option key={teacher.id} value={teacher.id}>
-                  {teacher.firstName
-                    ? `${teacher.firstName} ${teacher.lastName}`
-                    : teacher.username}
-                </option>
-              ))}
-            </select>
-          ) : (
-            <>Nothing found</>
-          )}
-        </div>
+
         <button
           type="submit"
           disabled={mutation.isPending}

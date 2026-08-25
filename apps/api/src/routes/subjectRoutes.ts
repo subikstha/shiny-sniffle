@@ -13,8 +13,8 @@ const router = Router();
 
 const createSubjectSchema = z.object({
   subjectName: z.string().min(1, { message: "Subject name is required" }),
-  teacherId: z.string().min(1, { message: "Subject must have a teacher" }),
-  daysOfWeek: z.array(z.number()),
+  // teacherId: z.string().min(1, { message: "Subject must have a teacher" }),
+  // daysOfWeek: z.array(z.number()),
 });
 
 router.get("/", authenticateToken, requireRole(["teacher"]), getAllSubjects);
