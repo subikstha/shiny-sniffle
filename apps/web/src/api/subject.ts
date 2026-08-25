@@ -8,6 +8,14 @@ export async function getSingleSubject(
   return data;
 }
 
+export async function getAllSubjectOfferings(): Promise<SubjectOfferingResponse> {
+  const response = await fetch(`/api/subjectOffering`, {
+    credentials: "include",
+  });
+  const data = await response.json();
+  return data;
+}
+
 export async function getAllSubjects(): Promise<GetAllSubjectsResponse> {
   const response = await fetch("/api/subjects/", { credentials: "include" });
   const data = await response.json();
@@ -36,7 +44,7 @@ export async function createSubjectOffering(
   startDate: string,
   endDate: string,
   daysOfWeek: number[],
-): Promise<CreateSubjectOfferingResponse> {
+): Promise<SubjectOfferingResponse> {
   const response = await fetch("/api/subjectOffering", {
     method: "POST",
     headers: {

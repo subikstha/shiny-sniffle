@@ -3,7 +3,26 @@ import { classSchedules, subjectOfferings } from "../db/schema.ts";
 import type { AuthenticatedRequest } from "../middleware/auth.ts";
 import type { Response } from "express";
 
-export const getAll = async function () {};
+export const getAll = async function (
+  req: AuthenticatedRequest,
+  res: Response,
+) {
+  try {
+    const allSubjectOfferings = await db.query.subjectOfferings.findMany({
+      with: {
+        schedules: true,
+      },
+    });
+
+    return res.status(200).json({
+      message: "Subject offerings got successfully",
+      data: allSubjectOfferings,
+    });
+  } catch (e) {
+    console.error("Failed to get all subject offerings", e);
+    return res.status(500).json({ message: "Failed to get subject offerings" });
+  }
+};
 
 export const create = async function (
   req: AuthenticatedRequest,
@@ -34,7 +53,7 @@ export const create = async function (
         .returning();
 
       return {
-        subjectOffering,
+        ...subjectOffering,
         classSchedules: createdClassSchedules,
       };
     });
