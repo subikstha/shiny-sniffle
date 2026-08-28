@@ -1,17 +1,27 @@
 import { z } from "zod";
 
 // Single student record schema
-const singleAttendanceRecordSchema = z.object({
-  studentId: z.string().uuid({ message: "Invalid student ID format" }),
-  attendances: z.array(
-    z.object({
-      date: z.string().min(1, { message: "Attendance date is required" }),
-      status: z.enum(["present", "absent"]),
-    }),
-  ),
+const attendanceRecordSchema = z.object({
+  studentId: z.string().uuid({
+    message: "Invalid student ID format",
+  }),
+
+  date: z.string().min(1, {
+    message: "Attendance date is required",
+  }),
+
+  status: z.enum(["present", "absent"]),
 });
 
-const bulkAttendanceRecordsSchema = z.array(singleAttendanceRecordSchema);
+export const bulkAttendanceRecordsSchema = z.object({
+  subjectOfferingId: z.string().uuid({
+    message: "Invalid subject offering ID format",
+  }),
+
+  attendanceRecords: z.array(attendanceRecordSchema).min(1, {
+    message: "At least one attendance record is required",
+  }),
+});
 
 // Bulk payload schema
 // export const bulkAttendanceSchema = z.object({

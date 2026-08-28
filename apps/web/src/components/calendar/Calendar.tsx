@@ -5,7 +5,7 @@ import {
   eachDayOfInterval,
   getDay,
 } from "date-fns";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { getAllStudents } from "../../api/users";
 import { calendarContext } from "./CalendarProvider";
 import { useContext, useEffect, useMemo } from "react";
@@ -13,6 +13,7 @@ import YearSelector from "./YearSelector";
 import MonthSelector from "./MonthSelector";
 import SubjectSelector from "./SubjectSelector";
 import AttendanceCell from "./AttendanceCell";
+import { bulkAttendance } from "../../api/attendance";
 interface AllStudents {
   data: {
     id: string;
@@ -24,7 +25,18 @@ interface AllStudents {
 
 function Calendar() {
   const { state, dispatch } = useContext(calendarContext);
-
+  const mutation = useMutation({
+    mutationFn: ({
+      subjectOfferingId,
+      attendanceRecords,
+    }: {
+      subjectOfferingId: string;
+      attendanceRecords: FlattenedAttendanceRecords;
+    }) => bulkAttendance(subjectOfferingId, attendanceRecords),
+    onSuccess: async (data) => {
+      console.log("Response back from the api", data);
+    },
+  });
   const activeDays =
     state.subjectOfferings && state.selectedSubjectOfferingId
       ? state.subjectOfferings
@@ -103,6 +115,28 @@ function Calendar() {
   ]);
   if (isLoading) return <div>Loading Data...</div>;
 
+  const handleBulkAttendance = () => {
+    const attendanceRecords = state.attendanceRecords?.flatMap((rec) =>
+      rec.attendances.map((att) => ({
+        studentId: rec.studentId,
+        date: att.date,
+        status: att.status,
+      })),
+    );
+
+    if (!attendanceRecords) return;
+
+    console.log("Attendance payload", {
+      subjectOfferingId: state.selectedSubjectOfferingId,
+      attendanceRecords,
+    });
+
+    mutation.mutate({
+      subjectOfferingId: state.selectedSubjectOfferingId,
+      attendanceRecords,
+    });
+  };
+
   return (
     <div>
       <div className="flex mb-4 justify-between">
@@ -124,7 +158,7 @@ function Calendar() {
                 <tbody>
                   {allStudents.map((student) => (
                     <tr key={student.id} className="border-b border-gray-200">
-                      <td>{student.firstName}</td>
+                      <td>{`${student.firstName} ${student.lastName}`}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -188,6 +222,9 @@ function Calendar() {
           </tr>
         </tbody>
       </table>
+      <button className="border rounded-lg" onClick={handleBulkAttendance}>
+        Submit
+      </button>
     </div>
   );
 }

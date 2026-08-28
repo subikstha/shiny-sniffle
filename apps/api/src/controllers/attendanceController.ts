@@ -2,17 +2,14 @@ import type { Request, Response } from "express";
 import type { AuthenticatedRequest } from "../middleware/auth.ts";
 import { attendance } from "../db/schema.ts";
 import db from "../db/connection.ts";
-import { sql } from "drizzle-orm";
 
 type AttendanceBody = {
   subjectOfferingId: string;
-  studentId: string;
+
   attendanceRecords: {
     studentId: string;
-    attendances: {
-      date: string;
-      status: "present" | "absent";
-    }[];
+    date: string;
+    status: "present" | "absent";
   }[];
 };
 
@@ -21,26 +18,35 @@ export const recordBulkAttendance = async (
   res: Response,
 ) => {
   const { subjectOfferingId, attendanceRecords } = req.body;
-  const teacherId = req.user!.id;
 
   try {
-    const payload = attendanceRecords.flatMap((rec) =>
-      rec.attendances.map((att) => ({
-        studentId: rec.studentId,
-        date: att.date,
-        status: att.status,
-      })),
-    );
+    const payload = attendanceRecords.map((a) => ({
+      studentId: a.studentId,
+      subjectOfferingId,
+      date: a.date,
+      status: a.status,
+    }));
 
-    console.log(
-      "This is the payload in bulk attendance controller",
-      payload,
-      payload.length,
-    );
+    const bulkInsertResult = await db
+      .insert(attendance)
+      .values(payload)
+      .onConflictDoUpdate({
+        target: [
+          attendance.studentId,
+          attendance.date,
+          attendance.subjectOfferingId,
+        ],
+        set: {
+          status: attendance.status,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
 
-    return res
-      .status(201)
-      .json({ message: "Attendance recorded successfully" });
+    return res.status(201).json({
+      message: "Attendance recorded successfully",
+      data: bulkInsertResult,
+    });
   } catch (e) {
     console.error("Bulk Attendance upload error", e);
     return res.status(500).json({ error: "Failed to record attendance" });
