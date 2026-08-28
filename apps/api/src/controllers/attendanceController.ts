@@ -4,40 +4,40 @@ import { attendance } from "../db/schema.ts";
 import db from "../db/connection.ts";
 import { sql } from "drizzle-orm";
 
+type AttendanceBody = {
+  subjectOfferingId: string;
+  studentId: string;
+  attendanceRecords: {
+    studentId: string;
+    attendances: {
+      date: string;
+      status: "present" | "absent";
+    }[];
+  }[];
+};
+
 export const recordBulkAttendance = async (
-  req: AuthenticatedRequest,
+  req: AuthenticatedRequest<AttendanceBody>,
   res: Response,
 ) => {
-  const { subjectId, date, records } = req.body;
+  const { subjectOfferingId, attendanceRecords } = req.body;
   const teacherId = req.user!.id;
 
   try {
-    const payload = records.map(
-      (rec: {
-        studentId: string;
-        status: "present" | "absent" | "late";
-        remarks?: string;
-      }) => ({
+    const payload = attendanceRecords.flatMap((rec) =>
+      rec.attendances.map((att) => ({
         studentId: rec.studentId,
-        teacherId,
-        subjectId,
-        date,
-        status: rec.status,
-        remarks: rec.remarks || null,
-      }),
+        date: att.date,
+        status: att.status,
+      })),
     );
 
-    await db
-      .insert(attendance)
-      .values(payload)
-      .onConflictDoUpdate({
-        target: [attendance.studentId, attendance.subjectId, attendance.date],
-        set: {
-          status: sql`EXCLUDED.status`,
-          remarks: sql`EXCLUDED.remarks`,
-          updatedAt: new Date(),
-        },
-      });
+    console.log(
+      "This is the payload in bulk attendance controller",
+      payload,
+      payload.length,
+    );
+
     return res
       .status(201)
       .json({ message: "Attendance recorded successfully" });

@@ -1,7 +1,8 @@
 import type { NextFunction, Request, Response } from "express";
 import { verifyToken, type JwtPayload } from "../utils/jwt.ts";
 
-export interface AuthenticatedRequest extends Request {
+export interface AuthenticatedRequest<TBody = unknown> extends Request {
+  body: TBody;
   user?: JwtPayload;
 }
 
