@@ -2,7 +2,8 @@ import type { Request, Response } from "express";
 import type { AuthenticatedRequest } from "../middleware/auth.ts";
 import { attendance } from "../db/schema.ts";
 import db from "../db/connection.ts";
-import { eq } from "drizzle-orm";
+import { and, eq, gte, lte } from "drizzle-orm";
+import { format, startOfMonth, endOfMonth } from 'date-fns'
 
 type AttendanceBody = {
   subjectOfferingId: string;
@@ -17,9 +18,21 @@ type AttendanceBody = {
 export const getBulkAttendance = async (req: AuthenticatedRequest, res: Response) => {
   const { year, month, subjectOfferingId } = req.query;
 
+  const date = new Date(Number(year), Number(month) - 1);
+
+  const startDate = format(startOfMonth(date), "yyyy-MM-dd");
+  const endDate = format(endOfMonth(date), "yyyy-MM-dd");
+
+  console.log('Start date and end dates in controller', startDate, endDate);
+
   try {
     const attendanceRecords = await db.query.attendance.findMany({
-      where: eq(attendance.subjectOfferingId, subjectOfferingId)
+      where:
+        and(
+          eq(attendance.subjectOfferingId, subjectOfferingId),
+          gte(attendance.date, startDate),
+          lte(attendance.date, endDate)
+        )
     })
 
     return res.status(200).json({
@@ -31,7 +44,6 @@ export const getBulkAttendance = async (req: AuthenticatedRequest, res: Response
     return res.status(500).json({ message: "Error getting bulk attendance" })
   }
 
-  return res.status(201).json({ message: 'Bulk attendance successfully retrieved' })
 }
 
 export const recordBulkAttendance = async (
