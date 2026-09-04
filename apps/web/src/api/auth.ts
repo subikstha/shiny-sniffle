@@ -1,4 +1,4 @@
-export async function login(email: string, password: string) {
+export async function login(email: string, password: string): Promise<LoginAPIResponse> {
   const response = await fetch("/api/auth/login", {
     method: "POST",
     headers: {
@@ -25,7 +25,7 @@ export async function logout() {
   return response.json();
 }
 
-export async function getMe() {
+export async function getMe(): Promise<LoginAPIResponse | null> {
   const response = await fetch("/api/auth/me", {
     credentials: "include",
   });

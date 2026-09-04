@@ -1,7 +1,7 @@
 import { Layout, Flex, Menu, Dropdown, Avatar } from 'antd'
 import useAuth from '../../hooks/useAuth';
 import { Link } from '@tanstack/react-router';
-import { QueryClient, useMutation } from '@tanstack/react-query';
+import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { logout } from '../../api/auth';
 const { Header } = Layout
 
@@ -18,7 +18,7 @@ const userItems = [
 
 
 const AppHeader = () => {
-  const queryClient = new QueryClient()
+  const queryClient = useQueryClient();
   const { isAuthenticated, isLoading, user } = useAuth();
   const logoutMutation = useMutation({
     mutationFn: () => logout(),

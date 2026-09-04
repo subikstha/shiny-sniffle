@@ -1,10 +1,13 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 import type React from "react";
 import { login, logout } from "../../api/auth";
 import useAuth from "../../hooks/useAuth";
 const Login = () => {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { isAuthenticated, isLoading, user } = useAuth();
+  console.log('Is authenticated is', isAuthenticated);
   console.log("user", user);
   console.log("isAuthenticated", isAuthenticated);
   const mutation = useMutation({
@@ -16,6 +19,7 @@ const Login = () => {
       await queryClient.invalidateQueries({
         queryKey: ["me"],
       });
+
     },
     onError: (data) => {
       console.log("Error from the server", data);

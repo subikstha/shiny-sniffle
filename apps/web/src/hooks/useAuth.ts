@@ -2,15 +2,19 @@ import { useQuery } from "@tanstack/react-query";
 import { getMe } from "../api/auth";
 
 function useAuth() {
-  const query = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["me"],
     queryFn: getMe,
   });
 
+  const user = data?.data?.user ?? null;
+
+  console.log('Data in useAuth', user)
+
   return {
-    user: query.data?.user ?? null,
-    isAuthenticated: !!query.data?.user,
-    isLoading: query.isLoading,
+    user,
+    isAuthenticated: !!user,
+    isLoading
   };
 }
 

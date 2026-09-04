@@ -41,7 +41,9 @@ export const register = async (req: Request, res: Response) => {
 
     res.status(201).json({
       message: "User created",
-      user,
+      data: {
+        user
+      }
     });
   } catch (e) {
     console.error("Registration Error", e);
@@ -81,14 +83,16 @@ export const login = async (req: Request, res: Response) => {
 
     return res.status(201).json({
       message: "Login Succesful",
-      user: {
-        id: user.id,
-        email: user.email,
-        username: user.username,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        createdAt: user.createdAt,
-      },
+      data: {
+        user: {
+          id: user.id,
+          email: user.email,
+          username: user.username,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          createdAt: user.createdAt,
+        },
+      }
     });
   } catch (e) {
     console.error("Login Error", e);
@@ -122,7 +126,10 @@ export const getMe = async (req: AuthenticatedRequest, res: Response) => {
       .from(users)
       .where(eq(users.id, req.user!.id));
     return res.json({
-      user,
+      message: 'User retrieved successfully',
+      data: {
+        user
+      },
     });
   } catch (e) {
     return res.status(500).json({ message: "Server error" });
