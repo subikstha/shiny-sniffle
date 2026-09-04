@@ -40,8 +40,8 @@ function Calendar() {
   const activeDays =
     state.subjectOfferings && state.selectedSubjectOfferingId
       ? state.subjectOfferings
-          .find((subject) => subject.id === state.selectedSubjectOfferingId)
-          ?.schedules.map((sc) => sc.dayOfWeek)
+        .find((subject) => subject.id === state.selectedSubjectOfferingId)
+        ?.schedules.map((sc) => sc.dayOfWeek)
       : [];
   console.log(
     "Active days",
@@ -131,10 +131,10 @@ function Calendar() {
       attendanceRecords,
     });
 
-    mutation.mutate({
-      subjectOfferingId: state.selectedSubjectOfferingId,
-      attendanceRecords,
-    });
+    // mutation.mutate({
+    //   subjectOfferingId: state.selectedSubjectOfferingId,
+    //   attendanceRecords,
+    // });
   };
 
   return (
@@ -199,8 +199,8 @@ function Calendar() {
                               className={`whitespace-nowrap border-r border-b border-gray-300 ${isAnActiveDay(date) ? "py-0! px-0!" : "py-2! px-4!"}`}
                             >
                               {activeDays &&
-                              activeDays.length > 0 &&
-                              activeDays.includes(getDay(date)) ? (
+                                activeDays.length > 0 &&
+                                activeDays.includes(getDay(date)) ? (
                                 <AttendanceCell
                                   buttonClasses="w-full h-full cursor-pointer flex py-4 px-4 justify-center"
                                   date={format(date, "yyyy-MM-dd")}

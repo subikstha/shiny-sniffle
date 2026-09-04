@@ -1,6 +1,6 @@
 export async function bulkAttendance(
   subjectOfferingId: string,
-  attendanceRecords: AttendanceRecords,
+  attendanceRecords: FlattenedAttendanceRecords,
 ) {
   const response = await fetch("/api/attendance/bulk", {
     method: "POST",
