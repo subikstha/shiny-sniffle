@@ -19,7 +19,9 @@ const Login = () => {
       await queryClient.invalidateQueries({
         queryKey: ["me"],
       });
-
+      navigate({
+        to: "/teacher-dashboard"
+      })
     },
     onError: (data) => {
       console.log("Error from the server", data);

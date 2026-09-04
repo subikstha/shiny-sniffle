@@ -9,9 +9,9 @@ export const Route = createFileRoute("/_teacher")({
       queryKey: ["me"],
       queryFn: getMe,
     });
-    const user = userResponse?.user;
+    const user = userResponse?.data?.user;
     console.log("RAW USER RESPONSE:", userResponse);
-    console.log("EXTRACTED ROLES:", userResponse?.user?.roles);
+    console.log("EXTRACTED ROLES:", userResponse?.data?.user?.roles);
 
     if (!user) {
       throw redirect({ to: "/login" });
