@@ -18,7 +18,7 @@ export const getAll = async function (
         },
       },
     });
-    console.log("Subject offerings in node", allSubjectOfferings);
+    // console.log("Subject offerings in node", allSubjectOfferings);
 
     return res.status(200).json({
       message: "Subject offerings got successfully",

@@ -13,7 +13,7 @@ import YearSelector from "./YearSelector";
 import MonthSelector from "./MonthSelector";
 import SubjectSelector from "./SubjectSelector";
 import AttendanceCell from "./AttendanceCell";
-import { bulkAttendance } from "../../api/attendance";
+import { bulkAttendance, getBulkAttendance } from "../../api/attendance";
 interface AllStudents {
   data: {
     id: string;
@@ -58,6 +58,15 @@ function Calendar() {
     queryFn: () => getAllStudents(),
     staleTime: 300000,
   });
+
+  // Fetch the attendance records
+  const { isLoading: isAttendanceLoading, data: attendanceData } = useQuery({
+    queryKey: ["bulk-attendance-data", state.selectedSubjectOfferingId, state.year, state.month],
+    queryFn: () => getBulkAttendance(state.selectedSubjectOfferingId, state.year, state.month),
+    staleTime: 300000
+  })
+
+  console.log('All attendance data is', attendanceData);
 
   const allStudents = useMemo(() => data?.data ?? [], [data?.data]);
 

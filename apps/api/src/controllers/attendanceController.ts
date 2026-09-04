@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import type { AuthenticatedRequest } from "../middleware/auth.ts";
 import { attendance } from "../db/schema.ts";
 import db from "../db/connection.ts";
+import { eq } from "drizzle-orm";
 
 type AttendanceBody = {
   subjectOfferingId: string;
@@ -12,6 +13,26 @@ type AttendanceBody = {
     status: "present" | "absent";
   }[];
 };
+
+export const getBulkAttendance = async (req: AuthenticatedRequest, res: Response) => {
+  const { year, month, subjectOfferingId } = req.query;
+
+  try {
+    const attendanceRecords = await db.query.attendance.findMany({
+      where: eq(attendance.subjectOfferingId, subjectOfferingId)
+    })
+
+    return res.status(200).json({
+      message: "Attendance records retrieved successfully",
+      data: attendanceRecords
+    })
+  } catch (e) {
+    console.error('Error getting attendance data', e)
+    return res.status(500).json({ message: "Error getting bulk attendance" })
+  }
+
+  return res.status(201).json({ message: 'Bulk attendance successfully retrieved' })
+}
 
 export const recordBulkAttendance = async (
   req: AuthenticatedRequest<AttendanceBody>,

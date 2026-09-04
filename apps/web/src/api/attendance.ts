@@ -18,3 +18,17 @@ export async function bulkAttendance(
 
   return data;
 }
+
+export async function getBulkAttendance(subjectOfferingId: string, year: number, month: number) {
+  console.log('subjectOfferingId in get bulk attendance', subjectOfferingId)
+  const response = await fetch(`/api/attendance/bulk?subjectOfferingId=${subjectOfferingId}&year=${year}&month=${month}`, {
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    credentials: 'include'
+  })
+
+  const data = await response.json();
+
+  return data;
+}
