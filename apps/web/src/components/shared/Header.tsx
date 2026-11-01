@@ -3,6 +3,7 @@ import useAuth from '../../hooks/useAuth';
 import { Link } from '@tanstack/react-router';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { logout } from '../../api/auth';
+import useNotification from '../../hooks/useNotification';
 const { Header } = Layout
 
 const userItems = [
@@ -18,6 +19,8 @@ const userItems = [
 
 
 const AppHeader = () => {
+  console.log('This is app header')
+  const notification = useNotification()
   const queryClient = useQueryClient();
   const { isAuthenticated, isLoading, user } = useAuth();
   const logoutMutation = useMutation({

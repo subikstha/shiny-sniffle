@@ -17,9 +17,12 @@
   "dependencies": {
     "@epic-web/remember": "^1.1.0",
     "bcrypt": "^6.0.0",
+    "firebase": "^13.1.0",
     "jose": "^6.2.8"
   },
   "devDependencies": {
-    "@types/bcrypt": "^6.0.0"
+    "@types/bcrypt": "^6.0.0",
+    "vite-plugin-pwa": "^2.0.0",
+    "workbox-window": "^7.4.1"
   }
 }
